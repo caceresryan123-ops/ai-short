@@ -20,16 +20,15 @@ export default function CreditsCard() {
     async function loadProfile() {
       try {
         const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
+          data: { session },
+        } = await supabase.auth.getSession();
 
-        if (userError) {
-          console.error("User error:", userError);
-          return;
-        }
+        console.log("SESSION:", session);
+
+        const user = session?.user;
 
         if (!user) {
+          console.log("NO HAY USUARIO");
           return;
         }
 
@@ -72,7 +71,6 @@ export default function CreditsCard() {
       <div className="flex items-start justify-between">
 
         <div>
-
           <p className="text-sm text-zinc-400">
             Current Plan
           </p>
@@ -80,7 +78,6 @@ export default function CreditsCard() {
           <h3 className="mt-1 text-xl font-semibold capitalize text-white">
             {loading ? "Loading..." : `${plan} Plan`}
           </h3>
-
         </div>
 
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-black">
@@ -88,8 +85,6 @@ export default function CreditsCard() {
         </div>
 
       </div>
-
-
 
       <div className="mt-6">
 
@@ -106,7 +101,6 @@ export default function CreditsCard() {
         </div>
 
 
-
         <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
 
           <div
@@ -121,7 +115,6 @@ export default function CreditsCard() {
       </div>
 
 
-
       <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950/50 p-3">
 
         <p className="text-xs text-zinc-500">
@@ -129,7 +122,6 @@ export default function CreditsCard() {
         </p>
 
       </div>
-
 
 
       <button
