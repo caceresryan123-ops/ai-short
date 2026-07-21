@@ -11,7 +11,7 @@ export default function Home() {
 
       <div className="flex gap-4 mt-8">
         <a
-          href="/auth/register"
+          href="/dashboard"
           className="bg-white text-black px-6 py-3 rounded-xl"
         >
           Start creating

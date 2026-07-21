@@ -1,12 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, CreditCard, Activity, AlertTriangle } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import {
+  User,
+  CreditCard,
+  Activity,
+  AlertTriangle
+} from "lucide-react";
 
 import { supabase } from "@/lib/supabase/client";
 
 
 export default function SettingsPage() {
+
+
+  const router = useRouter();
+
+
+  const [loading,setLoading] = useState(true);
 
 
   const [email,setEmail] = useState("");
@@ -16,83 +29,170 @@ export default function SettingsPage() {
 
 
 
+
   useEffect(()=>{
 
 
     async function loadData(){
 
 
-      const {
-        data:{
-          user
-        }
-      } = await supabase.auth.getUser();
+      try {
 
 
-
-      if(!user) return;
-
-
-      setEmail(
-        user.email || ""
-      );
-
-
-
-      const {
-        data:profile
-      } = await supabase
-        .from("profiles")
-        .select(
-          "plan,credits"
-        )
-        .eq(
-          "id",
-          user.id
-        )
-        .single();
-
-
-
-      if(profile){
-
-        setPlan(profile.plan);
-        setCredits(profile.credits);
-
-      }
-
-
-
-
-      const {
-        count
-      } = await supabase
-        .from("projects")
-        .select(
-          "*",
-          {
-            count:"exact",
-            head:true
+        const {
+          data:{
+            user
           }
-        )
-        .eq(
-          "user_id",
-          user.id
+        } = await supabase.auth.getUser();
+
+
+
+
+        // SI NO HAY USUARIO MANDA AL LOGIN
+
+        if(!user){
+
+          router.replace("/auth/login");
+
+          return;
+
+        }
+
+
+
+
+        setEmail(
+          user.email || ""
         );
 
 
 
-      setVideos(count || 0);
+
+
+
+        const {
+          data:profile
+        } = await supabase
+          .from("profiles")
+          .select(
+            "plan,credits"
+          )
+          .eq(
+            "id",
+            user.id
+          )
+          .single();
+
+
+
+
+
+        if(profile){
+
+
+          setPlan(
+            profile.plan
+          );
+
+
+          setCredits(
+            profile.credits
+          );
+
+
+        }
+
+
+
+
+
+        const {
+          count
+        } = await supabase
+          .from("projects")
+          .select(
+            "*",
+            {
+              count:"exact",
+              head:true
+            }
+          )
+          .eq(
+            "user_id",
+            user.id
+          );
+
+
+
+
+
+        setVideos(
+          count || 0
+        );
+
+
+
+        setLoading(false);
+
+
+
+      } catch(error){
+
+
+        console.error(
+          error
+        );
+
+
+        router.replace(
+          "/auth/login"
+        );
+
+
+      }
+
 
 
     }
 
 
 
+
     loadData();
 
 
-  },[]);
+
+  },[router]);
+
+
+
+
+
+
+
+  if(loading){
+
+
+    return (
+
+      <div className="
+      flex
+      min-h-screen
+      items-center
+      justify-center
+      bg-zinc-950
+      text-white
+      ">
+
+        Loading...
+
+      </div>
+
+    );
+
+
+  }
+
 
 
 
@@ -102,15 +202,18 @@ export default function SettingsPage() {
 
 return (
 
+
 <div className="p-8 text-white">
 
 
 <div className="max-w-4xl">
 
 
+
 <h1 className="text-4xl font-bold">
 Settings
 </h1>
+
 
 
 <p className="mt-3 text-zinc-400">
@@ -128,6 +231,8 @@ Manage your account, subscription and usage.
 
 
 
+
+
 <section className="
 rounded-3xl
 border
@@ -139,17 +244,23 @@ p-6
 
 <div className="flex items-center gap-3">
 
+
 <User size={20}/>
+
 
 <h2 className="text-xl font-semibold">
 Account
 </h2>
 
+
 </div>
 
 
 
+
+
 <div className="mt-6 space-y-4">
+
 
 
 <div>
@@ -158,29 +269,37 @@ Account
 Email
 </p>
 
+
 <p className="mt-1">
 {email}
 </p>
 
+
 </div>
+
 
 
 
 
 <div>
 
+
 <p className="text-sm text-zinc-400">
 Account status
 </p>
+
 
 <p className="mt-1 text-green-400">
 Active
 </p>
 
+
 </div>
 
 
+
 </div>
+
 
 
 </section>
@@ -191,6 +310,8 @@ Active
 
 
 
+
+
 <section className="
 rounded-3xl
 border
@@ -200,15 +321,20 @@ p-6
 ">
 
 
+
 <div className="flex items-center gap-3">
 
+
 <CreditCard size={20}/>
+
 
 <h2 className="text-xl font-semibold">
 Subscription
 </h2>
 
+
 </div>
+
 
 
 
@@ -219,6 +345,7 @@ Subscription
 <p className="text-sm text-zinc-400">
 Current plan
 </p>
+
 
 
 <p className="
@@ -234,14 +361,18 @@ capitalize
 
 
 
+
 <p className="mt-4 text-zinc-400">
 Credits available
 </p>
 
 
+
 <p className="text-xl font-semibold">
 {credits}
 </p>
+
+
 
 
 
@@ -263,7 +394,10 @@ Manage Billing
 </button>
 
 
+
+
 </div>
+
 
 
 </section>
@@ -285,10 +419,12 @@ p-6
 ">
 
 
+
 <div className="flex items-center gap-3">
 
 
 <Activity size={20}/>
+
 
 
 <h2 className="text-xl font-semibold">
@@ -301,12 +437,16 @@ Usage
 
 
 
+
 <div className="
 mt-6
 grid
 grid-cols-2
 gap-5
 ">
+
+
+
 
 
 <div className="
@@ -332,6 +472,7 @@ Videos generated
 
 
 
+
 <div className="
 rounded-2xl
 bg-zinc-800
@@ -352,10 +493,14 @@ Credits remaining
 </div>
 
 
+
+
 </div>
 
 
+
 </section>
+
 
 
 
@@ -373,10 +518,12 @@ p-6
 ">
 
 
+
 <div className="flex items-center gap-3">
 
 
 <AlertTriangle size={20}/>
+
 
 
 <h2 className="text-xl font-semibold text-red-400">
@@ -388,9 +535,12 @@ Danger Zone
 
 
 
+
+
 <p className="mt-4 text-sm text-zinc-400">
 Delete your account and all generated content permanently.
 </p>
+
 
 
 
@@ -413,19 +563,23 @@ Delete Account
 </button>
 
 
+
+
 </section>
 
 
 
 
 
-</div>
-
 
 </div>
 
 
 </div>
+
+
+</div>
+
 
 );
 

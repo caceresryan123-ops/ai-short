@@ -4,7 +4,7 @@ import PricingCard from "@/components/pricing/PricingCard";
 const plans = [
   {
     name:"Basic",
-    price:"$9/month",
+    price:"$9",
     plan:"basic",
     description:
       "Perfect for starting with AI videos."
@@ -12,7 +12,7 @@ const plans = [
 
   {
     name:"Starter",
-    price:"$19/month",
+    price:"$19",
     plan:"starter",
     description:
       "More credits for growing creators."
@@ -20,7 +20,7 @@ const plans = [
 
   {
     name:"Pro",
-    price:"$39/month",
+    price:"$39",
     plan:"pro",
     description:
       "For serious content creators."
@@ -28,7 +28,7 @@ const plans = [
 
   {
     name:"Business",
-    price:"$70/month",
+    price:"$69",
     plan:"business",
     description:
       "For teams and large projects."

@@ -3,11 +3,50 @@ import { NextResponse } from "next/server";
 import { paddle } from "@/lib/paddle/client";
 import { PLANS, type Plan } from "@/lib/paddle/plans";
 
+import { createClient } from "@/lib/supabase/server";
+
 
 export async function POST(req: Request) {
 
 
   try {
+
+
+    const supabase = await createClient();
+
+
+
+    const {
+      data:{
+        user
+      }
+    } = await supabase.auth.getUser();
+
+
+
+
+
+    // VERIFICAR SI ESTA REGISTRADO
+
+    if(!user){
+
+
+      return NextResponse.json(
+        {
+          error:"You must be logged in to purchase a plan."
+        },
+        {
+          status:401
+        }
+      );
+
+
+    }
+
+
+
+
+
 
     const body = await req.json();
 
@@ -16,7 +55,9 @@ export async function POST(req: Request) {
 
 
 
+
     if(!plan || !PLANS[plan]){
+
 
       return NextResponse.json(
         {
@@ -27,7 +68,11 @@ export async function POST(req: Request) {
         }
       );
 
+
     }
+
+
+
 
 
 
@@ -35,16 +80,25 @@ export async function POST(req: Request) {
 
 
 
+
+
     const transaction = await paddle.transactions.create({
 
+
       items:[
+
         {
           priceId,
           quantity:1
         }
+
       ]
 
+
     });
+
+
+
 
 
 
@@ -57,20 +111,28 @@ export async function POST(req: Request) {
 
 
 
+
+
+
   } catch(error){
 
 
     console.error(error);
 
 
+
     return NextResponse.json(
+
       {
         error:"Checkout creation failed"
       },
+
       {
         status:500
       }
+
     );
+
 
   }
 
